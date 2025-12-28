@@ -117,12 +117,24 @@ def plot_evt_diagnostics(analyzer: EVTAnalyzer, shock_name: str, actual_loss: fl
     ax2.scatter(theoretical_quantiles, sorted_excess.values, alpha=0.6)
     max_val = max(sorted_excess.max(), theoretical_quantiles.max())
     ax2.plot([0, max_val], [0, max_val], 'r--')
+    
+    # 上位5件に日付ラベルを追加
+    if analyzer.Nu >= 5:
+        top5 = sorted_excess.tail(5)
+        top5_theoretical_quantiles = theoretical_quantiles[-5:]
+        for i in range(len(top5)):
+            date_obj = top5.index[i]
+            date_label = f"{date_obj.year}/{date_obj.month}/{date_obj.day}"
+            x_pos = top5_theoretical_quantiles[i]
+            y_pos = top5.values[i]
+            ax2.text(x_pos, y_pos, date_label, fontsize=9, ha='right', va='bottom')
+            
     ax2.set(title=f'2. QQ Plot (Shape xi={xi:.2f})', xlabel='Theoretical Quantiles (Model)', ylabel='Empirical Quantiles (Data)')
     ax2.grid(True, alpha=0.4)
 
     # 3. Return Level Plot
     ax3 = fig.add_subplot(2, 2, 3)
-    rps = np.logspace(0, 3, 100) # 1年から1000年
+    rps = np.logspace(0, 2, 100) # 1年から1000年
     prob = 1 / (ANNUAL_TRADING_DAYS * rps)
     if xi > 0:
         evt_levels = analyzer.u + (beta / xi) * ((((analyzer.n / analyzer.Nu) * prob)**(-xi)) - 1)
