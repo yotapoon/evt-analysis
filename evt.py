@@ -186,7 +186,7 @@ def analyze_and_report_shock(df: pd.DataFrame, index_name: str, scenario: dict):
     # Walk-forward: ショック発生前日までのデータでモデルを訓練
     train_df = df.loc[df.index < shock_date]
     losses = -train_df[return_col].dropna()
-    losses = losses[losses > 0] # 損失のみを対象
+    #losses = losses[losses > 0] # 損失のみを対象
 
     if len(losses) < 200: # 分析に必要な最小データ数
         print(f"{scenario['name']:<25} | 分析不可: モデル訓練のためのデータが不足しています（{len(losses)}件）。")
